@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Révisions Économie - 1ère STMG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .menu-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            color: white;
+            text-align: center;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .menu-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .menu-card p {
+            opacity: 0.9;
+        }
+
+        .game-section {
+            display: none;
+            padding: 30px;
+        }
+
+        .game-section.active {
+            display: block;
+        }
+
+        .question-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: 1em;
+        }
+
+        .option-btn:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .option-btn.correct {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+        }
+
+        .option-btn.incorrect {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .score {
+            text-align: center;
+            padding: 20px;
+            background: #667eea;
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .matching-game {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .matching-column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .matching-item {
+            background: white;
+            border: 2px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .matching-item:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .matching-item.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .matching-item.matched {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+            cursor: default;
+        }
+
+        .drag-drop-area {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .drop-zone {
+            background: #f8f9fa;
+            border: 3px dashed #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            min-height: 100px;
+            text-align: center;
+        }
+
+        .drop-zone h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .draggable-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .draggable {
+            background: #667eea;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: move;
+            transition: all 0.3s;
+            user-select: none;
+        }
+
+        .draggable:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .draggable.placed {
+            background: #4caf50;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .feedback {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            .matching-game {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Révisions Économie</h1>
+            <p>Spécialisation et échanges économiques</p>
+        </div>
+
+        <div id="menuSection" class="menu">
+            <div class="menu-card" onclick="startQuiz()">
+                <h3>🎯 Quiz Interactif</h3>
+                <p>Testez vos connaissances avec 8 questions variées</p>
+            </div>
+            <div class="menu-card" onclick="startMatching()">
+                <h3>🔗 Associations</h3>
+                <p>Reliez les concepts aux bonnes définitions</p>
+            </div>
+            <div class="menu-card" onclick="startDragDrop()">
+                <h3>📦 Classement</h3>
+                <p>Classez les flux économiques par catégorie</p>
+            </div>
+        </div>
+
+        <div id="quizSection" class="game-section">
+            <div class="score" id="quizScore">Score: 0/8 | Question 1/8</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="quizProgress" style="width: 0%"></div>
+            </div>
+            <div id="quizContent"></div>
+            <div style="text-align: center;">
+                <button class="btn btn-secondary" onclick="backToMenu()">Retour au menu</button>
+                <button class="btn" id="nextBtn" onclick="nextQuestion()" style="display:none;">Question suivante</button>
+            </div>
+        </div>
+
+        <div id="matchingSection" class="game-section">
+            <h2 style="text-align: center; color: #667eea; margin-bottom: 20px;">Associez les termes aux définitions</h2>
+            <div class="score" id="matchingScore">Associations trouvées: 0/6</div>
+            <div class="matching-game" id="matchingGame"></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="backToMenu()">Retour au menu</button>
+                <button class="btn" onclick="resetMatching()">Recommencer</button>
+            </div>
+        </div>
+
+        <div id="dragDropSection" class="game-section">
+            <h2 style="text-align: center; color: #667eea; margin-bottom: 20px;">Classez les exemples dans la bonne catégorie</h2>
+            <div class="score" id="dragDropScore">Score: 0/8</div>
+            <div id="dropZones" class="drag-drop-area"></div>
+            <div class="draggable-items" id="draggableItems"></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="checkDragDrop()">Vérifier mes réponses</button>
+                <button class="btn btn-secondary" onclick="backToMenu()">Retour au menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Questions du quiz
+        const quizQuestions = [
+            {
+                question: "Quand Amazon livre un colis à votre domicile, la livraison représente :",
+                options: ["Un flux réel car c'est un service fourni physiquement", "Un flux monétaire car vous avez payé", "Les deux à la fois", "Un circuit économique"],
+                correct: 0,
+                explanation: "La livraison est un service fourni physiquement, c'est donc un flux réel. Le paiement que vous avez fait est le flux monétaire correspondant."
+            },
+            {
+                question: "Nike fabrique ses chaussures en Asie où les coûts de production sont plus bas, puis les vend en Europe. Quel principe économique Nike utilise-t-elle ?",
+                options: ["La spécialisation pour être plus efficace et réduire les coûts", "Le circuit économique fermé", "Le troc international", "L'inflation"],
+                correct: 0,
+                explanation: "Nike se spécialise en produisant là où c'est le plus efficace, illustrant le gain à l'échange par spécialisation internationale."
+            },
+            {
+                question: "Vous mettez 100€ de côté chaque mois pour acheter un smartphone dans 6 mois. La monnaie joue ici le rôle de :",
+                options: ["Réserve de valeur", "Intermédiaire des échanges", "Unité de compte", "Marché financier"],
+                correct: 0,
+                explanation: "La monnaie est conservée pour un achat futur, c'est sa fonction de réserve de valeur."
+            },
+            {
+                question: "Un salarié reçoit son salaire et achète ensuite des courses au supermarché qui paie ses fournisseurs. Cela montre :",
+                options: ["La circulation continue des flux dans l'économie", "Que l'argent disparaît après usage", "Un problème de spécialisation", "Un marché du travail"],
+                correct: 0,
+                explanation: "Cet exemple illustre le circuit économique où les flux monétaires circulent en continu entre les agents économiques."
+            },
+            {
+                question: "Pendant les soldes, vous comparez un jean à 50€ et un autre à 70€ pour choisir. Vous utilisez la monnaie comme :",
+                options: ["Unité de compte pour comparer les valeurs", "Réserve de valeur", "Intermédiaire des échanges", "Circuit économique"],
+                correct: 0,
+                explanation: "La monnaie permet de mesurer et comparer la valeur des biens, c'est sa fonction d'unité de compte."
+            },
+            {
+                question: "La France produit du vin et achète du pétrole à d'autres pays. Pourquoi cet échange est-il intéressant pour la France ?",
+                options: ["Elle se spécialise dans ce qu'elle fait bien et obtient ce qu'elle ne produit pas", "Elle évite de payer des impôts", "Elle crée plus d'emplois uniquement", "C'est obligatoire"],
+                correct: 0,
+                explanation: "La spécialisation permet à chaque pays de produire ce qu'il fait le mieux et d'échanger pour obtenir le reste, créant un gain à l'échange."
+            },
+            {
+                question: "Un boulanger verse un salaire à son employé qui utilise cet argent pour acheter du pain. Cela illustre :",
+                options: ["L'interdépendance entre ménages et entreprises dans le circuit économique", "Un problème de spécialisation", "Du troc moderne", "Un marché financier uniquement"],
+                correct: 0,
+                explanation: "Cet exemple montre le circuit économique élémentaire : les entreprises versent des revenus aux ménages qui les dépensent, créant une interdépendance."
+            },
+            {
+                question: "Dans un pays où les prix augmentent très vite (forte inflation), les habitants préfèrent dépenser rapidement leur argent. Pourquoi ?",
+                options: ["La monnaie perd de sa valeur avec le temps, donc ils ne veulent pas la garder", "Les magasins ferment", "Le troc revient obligatoirement", "Les salaires disparaissent"],
+                correct: 0,
+                explanation: "L'inflation affaiblit la fonction de réserve de valeur de la monnaie : conserver de l'argent fait perdre du pouvoir d'achat."
+            }
+        ];
+
+        // Jeu d'associations
+        const matchingPairs = {
+            "Spécialisation": "Concentration de l'activité sur une production précise pour être plus efficace",
+            "Marché": "Lieu où se rencontrent l'offre et la demande pour échanger à un prix",
+            "Gain à l'échange": "Avantage obtenu quand on se spécialise et échange plutôt que tout produire soi-même",
+            "Flux réel": "Circulation de biens, services ou travail dans l'économie",
+            "Flux monétaire": "Circulation d'argent en contrepartie des flux réels",
+            "Circuit économique": "Représentation des relations d'échanges entre ménages et entreprises"
+        };
+
+        // Jeu drag and drop
+        const dragDropItems = {
+            "Flux réels": ["Livraison d'un ordinateur", "Prestation d'un dentiste", "Travail d'un ouvrier", "Service de nettoyage"],
+            "Flux monétaires": ["Paiement par carte bancaire", "Salaire versé", "Remboursement d'emprunt", "Achat avec des espèces"]
+        };
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedLeft = null;
+        let matchedPairs = 0;
+
+        function startQuiz() {
+            document.getElementById('menuSection').style.display = 'none';
+            document.getElementById('quizSection').classList.add('active');
+            currentQuestion = 0;
+            score = 0;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = quizQuestions[currentQuestion];
+            const progress = ((currentQuestion + 1) / quizQuestions.length) * 100;
+            document.getElementById('quizProgress').style.width = progress + '%';
+            document.getElementById('quizScore').textContent = `Score: ${score}/${quizQuestions.length} | Question ${currentQuestion + 1}/${quizQuestions.length}`;
+            
+            let html = `
+                <div class="question-card">
+                    <div class="question-text">${q.question}</div>
+                    <div class="options">
+            `;
+            
+            q.options.forEach((option, index) => {
+                html += `<button class="option-btn" onclick="selectAnswer(${index})">${option}</button>`;
+            });
+            
+            html += `</div></div>`;
+            document.getElementById('quizContent').innerHTML = html;
+            document.getElementById('nextBtn').style.display = 'none';
+        }
+
+        function selectAnswer(selected) {
+            const q = quizQuestions[currentQuestion];
+            const buttons = document.querySelectorAll('.option-btn');
+            
+            buttons.forEach((btn, index) => {
+                btn.disabled = true;
+                if (index === q.correct) {
+                    btn.classList.add('correct');
+                }
+                if (index === selected && index !== q.correct) {
+                    btn.classList.add('incorrect');
+                }
+            });
+
+            if (selected === q.correct) {
+                score++;
+                document.getElementById('quizContent').innerHTML += `
+                    <div class="feedback correct">
+                        ✅ Bonne réponse ! ${q.explanation}
+                    </div>
+                `;
+            } else {
+                document.getElementById('quizContent').innerHTML += `
+                    <div class="feedback incorrect">
+                        ❌ Incorrect. ${q.explanation}
+                    </div>
+                `;
+            }
+
+            document.getElementById('quizScore').textContent = `Score: ${score}/${quizQuestions.length} | Question ${currentQuestion + 1}/${quizQuestions.length}`;
+            document.getElementById('nextBtn').style.display = 'inline-block';
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < quizQuestions.length) {
+                showQuestion();
+            } else {
+                showQuizResults();
+            }
+        }
+
+        function showQuizResults() {
+            const percentage = (score / quizQuestions.length) * 100;
+            let message = '';
+            if (percentage >= 80) message = '🌟 Excellent ! Vous maîtrisez parfaitement le chapitre !';
+            else if (percentage >= 60) message = '👍 Bien ! Quelques révisions et ce sera parfait.';
+            else message = '📖 Continuez à réviser, vous allez progresser !';
+
+            document.getElementById('quizContent').innerHTML = `
+                <div class="question-card" style="text-align: center; padding: 40px;">
+                    <h2 style="color: #667eea; margin-bottom: 20px;">Quiz terminé !</h2>
+                    <div style="font-size: 3em; margin: 20px 0;">${score}/${quizQuestions.length}</div>
+                    <div style="font-size: 2em; margin: 20px 0;">${percentage.toFixed(0)}%</div>
+                    <p style="font-size: 1.2em; color: #555;">${message}</p>
+                </div>
+            `;
+            document.getElementById('nextBtn').style.display = 'none';
+        }
+
+        function startMatching() {
+            document.getElementById('menuSection').style.display = 'none';
+            document.getElementById('matchingSection').classList.add('active');
+            matchedPairs = 0;
+            selectedLeft = null;
+            initMatching();
+        }
+
+        function initMatching() {
+            const terms = Object.keys(matchingPairs);
+            const definitions = Object.values(matchingPairs);
+            
+            // Mélanger les définitions
+            const shuffledDefs = [...definitions].sort(() => Math.random() - 0.5);
+            
+            let leftHtml = '<div class="matching-column"><h3 style="text-align:center; color:#667eea;">Termes</h3>';
+            let rightHtml = '<div class="matching-column"><h3 style="text-align:center; color:#764ba2;">Définitions</h3>';
+            
+            terms.forEach((term, index) => {
+                leftHtml += `<div class="matching-item" data-term="${term}" data-index="${index}">${term}</div>`;
+            });
+            
+            shuffledDefs.forEach((def, index) => {
+                rightHtml += `<div class="matching-item" data-definition="${def}" data-index="${index}">${def}</div>`;
+            });
+            
+            leftHtml += '</div>';
+            rightHtml += '</div>';
+            
+            document.getElementById('matchingGame').innerHTML = leftHtml + rightHtml;
+            
+            // Ajouter les événements après l'insertion du HTML
+            document.querySelectorAll('.matching-column')[0].querySelectorAll('.matching-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    selectLeft(this.dataset.index, this.dataset.term);
+                });
+            });
+            
+            document.querySelectorAll('.matching-column')[1].querySelectorAll('.matching-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    selectRight(this.dataset.definition);
+                });
+            });
+        }
+
+        function selectLeft(index, term) {
+            const leftColumn = document.querySelectorAll('.matching-column')[0];
+            const clickedItem = leftColumn.querySelector(`[data-index="${index}"]`);
+            
+            if (clickedItem.classList.contains('matched')) return;
+            
+            leftColumn.querySelectorAll('.matching-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            clickedItem.classList.add('selected');
+            selectedLeft = term;
+        }
+
+        function selectRight(definition) {
+            if (!selectedLeft) {
+                alert('Sélectionnez d\'abord un terme à gauche !');
+                return;
+            }
+            
+            const rightItems = document.querySelectorAll('.matching-column')[1].querySelectorAll('.matching-item');
+            let selectedRight = null;
+            
+            rightItems.forEach(item => {
+                if (item.dataset.definition === definition && !item.classList.contains('matched')) {
+                    selectedRight = item;
+                }
+            });
+            
+            if (!selectedRight || selectedRight.classList.contains('matched')) return;
+            
+            if (matchingPairs[selectedLeft] === definition) {
+                const leftItems = document.querySelectorAll('.matching-column')[0].querySelectorAll('.matching-item');
+                leftItems.forEach(item => {
+                    if (item.dataset.term === selectedLeft) {
+                        item.classList.add('matched');
+                        item.classList.remove('selected');
+                    }
+                });
+                selectedRight.classList.add('matched');
+                matchedPairs++;
+                document.getElementById('matchingScore').textContent = `Associations trouvées: ${matchedPairs}/6`;
+                
+                if (matchedPairs === 6) {
+                    setTimeout(() => {
+                        alert('🎉 Bravo ! Vous avez trouvé toutes les associations !');
+                    }, 300);
+                }
+            } else {
+                alert('❌ Cette association est incorrecte, réessayez !');
+            }
+            
+            selectedLeft = null;
+        }
+
+        function resetMatching() {
+            matchedPairs = 0;
+            selectedLeft = null;
+            document.getElementById('matchingScore').textContent = 'Associations trouvées: 0/6';
+            initMatching();
+        }
+
+        function startDragDrop() {
+            document.getElementById('menuSection').style.display = 'none';
+            document.getElementById('dragDropSection').classList.add('active');
+            initDragDrop();
+        }
+
+        function initDragDrop() {
+            let zonesHtml = '';
+            let itemsHtml = '';
+            
+            Object.keys(dragDropItems).forEach(category => {
+                zonesHtml += `
+                    <div class="drop-zone" data-category="${category}" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        <h4>${category}</h4>
+                        <div class="dropped-items"></div>
+                    </div>
+                `;
+            });
+            
+            const allItems = [];
+            Object.entries(dragDropItems).forEach(([category, items]) => {
+                items.forEach(item => {
+                    allItems.push({text: item, category: category});
+                });
+            });
+            
+            allItems.sort(() => Math.random() - 0.5);
+            
+            allItems.forEach((item, index) => {
+                itemsHtml += `
+                    <div class="draggable" draggable="true" ondragstart="drag(event)" 
+                         data-category="${item.category}" id="drag${index}">
+                        ${item.text}
+                    </div>
+                `;
+            });
+            
+            document.getElementById('dropZones').innerHTML = zonesHtml;
+            document.getElementById('draggableItems').innerHTML = itemsHtml;
+        }
+
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const draggedElement = document.getElementById(data);
+            
+            let dropZone = ev.target;
+            if (!dropZone.classList.contains('drop-zone')) {
+                dropZone = dropZone.closest('.drop-zone');
+            }
+            
+            if (dropZone) {
+                const droppedItems = dropZone.querySelector('.dropped-items') || dropZone;
+                droppedItems.appendChild(draggedElement);
+            }
+        }
+
+        function checkDragDrop() {
+            let correct = 0;
+            const dropZones = document.querySelectorAll('.drop-zone');
+            
+            dropZones.forEach(zone => {
+                const category = zone.dataset.category;
+                const items = zone.querySelectorAll('.draggable');
+                
+                items.forEach(item => {
+                    if (item.dataset.category === category) {
+                        item.classList.add('placed');
+                        correct++;
+                    } else {
+                        item.style.background = '#f44336';
+                    }
+                });
+            });
+            
+            document.getElementById('dragDropScore').textContent = `Score: ${correct}/8`;
+            
+            if (correct === 8) {
+                setTimeout(() => {
+                    alert('🎉 Parfait ! Tous les flux sont correctement classés !');
+                }, 300);
+            } else {
+                alert(`Vous avez ${correct} réponses correctes sur 8. Les éléments en vert sont bien placés, ceux en rouge sont à déplacer.`);
+            }
+        }
+
+        function backToMenu() {
+            document.querySelectorAll('.game-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('menuSection').style.display = 'grid';
+        }
+    </script>
+</body>
+</html>
